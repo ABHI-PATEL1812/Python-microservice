@@ -1,0 +1,45 @@
+version: '3.9'
+services:
+  backend:
+    container_name: django_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'python manage.py runserver 0.0.0.0:8000'
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  queue:
+    container_name: queue_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'python consumer.py'
+    depends_on:
+      - db
+      - backend
+
+  db:
+    container_name: postgres_service
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: micro_admin
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abhi1999
+    volumes:
+      - admin_db:/var/lib/postgres/data
+    ports:
+      - 16000:5432
+
+volumes:
+  admin_db:
+
+networks:
+  default:
+    external:
+      name: microservice_network

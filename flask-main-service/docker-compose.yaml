@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  backend_flask:
+    container_name: flask_service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'python main.py'
+    ports:
+      - 8001:5000
+    volumes:
+      - .:/app
+    depends_on:
+      - db_flask
+
+  queue_flask:
+    container_name: queue_service_flask
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: 'python consumer.py'
+    depends_on:
+      - db_flask
+
+  db_flask:
+    container_name: postgres_flask_service
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: micro_main
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abhi1999
+    volumes:
+      - main_db:/var/lib/postgres/data
+    ports:
+      - 16001:5432
+
+volumes:
+  main_db:
+
+networks:
+  default:
+    external:
+      name: microservice_network

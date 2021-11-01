@@ -1,0 +1,6 @@
+flask-main-service/.idea/
+django-admin-service/admin/.dbdata/
+django-admin-service/.idea/
+*.pyc
+
+
